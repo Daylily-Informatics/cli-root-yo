@@ -1540,7 +1540,7 @@ dist_name="zebra_day"
 XDG app dir name zebra_day
 
 
-config primary filename zebra-day-config.yaml
+config primary filename zebra-day-config.json
 
 
 legacy copy filename printer_config.json and legacy macOS dir ~/Library/Preferences/zebra_day (to preserve current migration behavior)
