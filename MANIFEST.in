@@ -1,0 +1,7 @@
+include LICENSE
+include README.md
+include SPEC.md
+recursive-include cli_root_yo py.typed
+prune .ignore
+prune tests
+

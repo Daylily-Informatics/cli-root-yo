@@ -7,16 +7,36 @@ name = "cli-root-yo"
 dynamic = ["version"]
 description = "Reusable CLI kernel for building unified command-line interfaces with consistent behavior, output style, help, and extension semantics."
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
 requires-python = ">=3.10"
 authors = [
     {name = "Daylily Informatics"},
 ]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
+keywords = ["cli", "typer", "rich", "plugin", "xdg", "framework"]
 dependencies = [
     "typer>=0.21.0,<0.22.0",
     "rich>=14.0.0,<15.0.0",
     "click>=8.3.0,<9.0.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/Daylily-Informatics/cli-root-yo"
+Repository = "https://github.com/Daylily-Informatics/cli-root-yo"
+Issues = "https://github.com/Daylily-Informatics/cli-root-yo/issues"
 
 [project.optional-dependencies]
 dev = [
@@ -24,6 +44,8 @@ dev = [
     "pytest-cov>=4.0",
     "ruff>=0.4.0",
     "mypy>=1.0",
+    "build>=1.0",
+    "twine>=5.0",
 ]
 
 [tool.setuptools_scm]
