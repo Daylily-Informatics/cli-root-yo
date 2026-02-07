@@ -1,27 +1,23 @@
-"""Tests for cli_root_yo.app — factory, run, built-in commands."""
+"""Tests for cli_core_yo.app — factory, run, built-in commands."""
 
 from __future__ import annotations
 
 import json
-import os
 import sys
-from pathlib import Path
-from unittest.mock import patch, MagicMock
 
 import pytest
 import typer
 from typer.testing import CliRunner
 
-from cli_root_yo.app import (
-    create_app,
-    run,
-    _validate_spec,
+from cli_core_yo.app import (
     _get_dist_version,
     _resolve_template,
+    _validate_spec,
+    create_app,
+    run,
 )
-from cli_root_yo.errors import SpecValidationError
-from cli_root_yo.spec import CliSpec, ConfigSpec, EnvSpec, PluginSpec, XdgSpec
-
+from cli_core_yo.errors import SpecValidationError
+from cli_core_yo.spec import CliSpec, ConfigSpec, EnvSpec, PluginSpec, XdgSpec
 
 runner = CliRunner()
 
@@ -58,7 +54,7 @@ def minimal_spec(xdg_spec, tmp_path):
     return CliSpec(
         prog_name="test-app",
         app_display_name="Test App",
-        dist_name="cli-root-yo",
+        dist_name="cli-core-yo",
         root_help="A test application.",
         xdg=xdg_spec,
     )
@@ -70,7 +66,7 @@ def full_spec(xdg_spec, config_spec, env_spec):
     return CliSpec(
         prog_name="test-app",
         app_display_name="Test App",
-        dist_name="cli-root-yo",
+        dist_name="cli-core-yo",
         root_help="A test application.",
         xdg=xdg_spec,
         config=config_spec,
@@ -146,8 +142,8 @@ class TestValidateSpec:
 
 class TestHelpers:
     def test_get_dist_version_known(self):
-        """cli-root-yo is installed, so version should not be 'unknown'."""
-        v = _get_dist_version("cli-root-yo")
+        """cli-core-yo is installed, so version should not be 'unknown'."""
+        v = _get_dist_version("cli-core-yo")
         assert v != "unknown"
 
     def test_get_dist_version_unknown(self):
@@ -233,7 +229,6 @@ class TestCreateApp:
         assert "env" in result.output.lower()
 
 
-
 # ── Version command tests ───────────────────────────────────────────────────
 
 
@@ -297,7 +292,7 @@ class TestInfoCommand:
         spec = CliSpec(
             prog_name="test-app",
             app_display_name="Test App",
-            dist_name="cli-root-yo",
+            dist_name="cli-core-yo",
             root_help="A test.",
             xdg=xdg_spec,
             info_hooks=[_hook],
@@ -369,7 +364,7 @@ class TestConfigGroup:
         spec = CliSpec(
             prog_name="test-app",
             app_display_name="Test App",
-            dist_name="cli-root-yo",
+            dist_name="cli-core-yo",
             root_help="A test.",
             xdg=xdg_spec,
             config=config_spec,
@@ -389,7 +384,7 @@ class TestConfigGroup:
         spec = CliSpec(
             prog_name="test-app",
             app_display_name="Test App",
-            dist_name="cli-root-yo",
+            dist_name="cli-core-yo",
             root_help="A test.",
             xdg=xdg_spec,
             config=config_spec,
@@ -408,7 +403,7 @@ class TestConfigGroup:
         spec = CliSpec(
             prog_name="test-app",
             app_display_name="Test App",
-            dist_name="cli-root-yo",
+            dist_name="cli-core-yo",
             root_help="A test.",
             xdg=xdg_spec,
             config=config_spec,
@@ -517,7 +512,6 @@ class TestRun:
         assert exit_code == 1
 
 
-
 # ── Integration Tests: Behavioral Equivalence (§7.4, Phase 6) ─────────────
 
 
@@ -558,7 +552,7 @@ class TestRootHelp:
         out_lower = result.output.lower()
         # Check these are not listed as command groups
         lines = out_lower.splitlines()
-        cmd_lines = [l.strip() for l in lines if l.strip().startswith(("config", "env "))]
+        cmd_lines = [ln.strip() for ln in lines if ln.strip().startswith(("config", "env "))]
         assert len(cmd_lines) == 0
 
 
@@ -577,7 +571,8 @@ class TestGlobalFlags:
         """add_completion=True means --install-completion exists."""
         app = _make_app(minimal_spec, tmp_path, monkeypatch)
         result = runner.invoke(app, ["--help"])
-        assert "install-completion" in result.output.lower() or "completion" in result.output.lower()
+        out_lower = result.output.lower()
+        assert "install-completion" in out_lower or "completion" in out_lower
 
     def test_command_help_flag(self, minimal_spec, tmp_path, monkeypatch):
         """§2.4 — <prog> <command> --help shows command-scoped help."""
@@ -601,25 +596,24 @@ class TestCommandOrdering:
 
     def test_plugin_commands_after_builtins(self, xdg_spec, tmp_path, monkeypatch):
         """Downstream commands appear after built-in commands."""
+
         def _plugin(registry, spec):
             registry.add_command(None, "zebra", lambda: None, help_text="Zebra cmd.")
 
-        spec = CliSpec(
+        CliSpec(
             prog_name="test-app",
             app_display_name="Test App",
-            dist_name="cli-root-yo",
+            dist_name="cli-core-yo",
             root_help="A test.",
             xdg=xdg_spec,
             plugins=PluginSpec(explicit=["tests.test_app._dummy_plugin"]),
         )
-        # We'll use direct create_app instead — register plugin inline
-        from cli_root_yo.app import create_app as _ca
 
         # Override: build app manually with a real plugin
         spec2 = CliSpec(
             prog_name="test-app",
             app_display_name="Test App",
-            dist_name="cli-root-yo",
+            dist_name="cli-core-yo",
             root_help="A test.",
             xdg=xdg_spec,
         )
@@ -630,7 +624,6 @@ class TestCommandOrdering:
         info_pos = out.find("info")
         assert ver_pos >= 0 and info_pos >= 0
         assert ver_pos < info_pos
-
 
 
 class TestJsonFormat:
@@ -693,7 +686,6 @@ class TestJsonFormat:
         assert result.exit_code == 2
 
 
-
 class TestExitCodes:
     """§2.6 — Exit code contract."""
 
@@ -738,7 +730,8 @@ class TestNoColor:
     def test_no_color_suppresses_ansi(self, minimal_spec, tmp_path, monkeypatch):
         """When NO_COLOR is set, output MUST have no ANSI codes."""
         monkeypatch.setenv("NO_COLOR", "1")
-        from cli_root_yo.output import _reset_console
+        from cli_core_yo.output import _reset_console
+
         _reset_console()  # force console re-creation
         app = _make_app(minimal_spec, tmp_path, monkeypatch)
         result = runner.invoke(app, ["version"])
@@ -747,7 +740,8 @@ class TestNoColor:
 
     def test_no_color_info_no_ansi(self, minimal_spec, tmp_path, monkeypatch):
         monkeypatch.setenv("NO_COLOR", "1")
-        from cli_root_yo.output import _reset_console
+        from cli_core_yo.output import _reset_console
+
         _reset_console()
         app = _make_app(minimal_spec, tmp_path, monkeypatch)
         result = runner.invoke(app, ["info"])
@@ -755,13 +749,12 @@ class TestNoColor:
         _reset_console()
 
 
-
 class TestDebugMode:
-    """§6.6 — Debug mode via CLI_ROOT_YO_DEBUG=1."""
+    """§6.6 — Debug mode via CLI_CORE_YO_DEBUG=1."""
 
     def test_debug_mode_enabled(self, xdg_spec, tmp_path, monkeypatch):
-        """Debug mode should be set when CLI_ROOT_YO_DEBUG=1."""
-        monkeypatch.setenv("CLI_ROOT_YO_DEBUG", "1")
+        """Debug mode should be set when CLI_CORE_YO_DEBUG=1."""
+        monkeypatch.setenv("CLI_CORE_YO_DEBUG", "1")
         monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "config"))
         monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "data"))
         monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
@@ -778,7 +771,7 @@ class TestDebugMode:
         assert code == 1
 
     def test_debug_mode_not_enabled_by_default(self, minimal_spec, tmp_path, monkeypatch):
-        monkeypatch.delenv("CLI_ROOT_YO_DEBUG", raising=False)
+        monkeypatch.delenv("CLI_CORE_YO_DEBUG", raising=False)
         monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path / "config"))
         monkeypatch.setenv("XDG_DATA_HOME", str(tmp_path / "data"))
         monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
@@ -792,13 +785,14 @@ class TestPluginIntegration:
 
     def test_explicit_plugin_adds_command(self, xdg_spec, tmp_path, monkeypatch):
         """An explicit plugin callable registers a command visible in help."""
+
         def _my_plugin(registry, spec):
             registry.add_command(None, "greet", lambda: print("hello"), help_text="Say hi.")
 
         spec = CliSpec(
             prog_name="test-app",
             app_display_name="Test App",
-            dist_name="cli-root-yo",
+            dist_name="cli-core-yo",
             root_help="A test.",
             xdg=xdg_spec,
         )
@@ -809,11 +803,12 @@ class TestPluginIntegration:
         monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
 
         # Build manually with plugin
-        from cli_root_yo.xdg import resolve_paths
-        from cli_root_yo.registry import CommandRegistry
         import typer as _typer
 
-        xdg_paths = resolve_paths(spec.xdg)
+        from cli_core_yo.registry import CommandRegistry
+        from cli_core_yo.xdg import resolve_paths
+
+        resolve_paths(spec.xdg)
         reg = CommandRegistry()
 
         # Built-ins first
@@ -839,7 +834,7 @@ class TestPluginIntegration:
         spec = CliSpec(
             prog_name="test-app",
             app_display_name="Test App",
-            dist_name="cli-root-yo",
+            dist_name="cli-core-yo",
             root_help="A test.",
             xdg=xdg_spec,
             plugins=PluginSpec(explicit=["nonexistent.module.func"]),
@@ -850,7 +845,6 @@ class TestPluginIntegration:
         monkeypatch.setenv("XDG_CACHE_HOME", str(tmp_path / "cache"))
         code = run(spec, ["version"])
         assert code == 1
-
 
 
 class TestConfigWorkflow:
@@ -865,7 +859,7 @@ class TestConfigWorkflow:
         spec = CliSpec(
             prog_name="test-app",
             app_display_name="Test App",
-            dist_name="cli-root-yo",
+            dist_name="cli-core-yo",
             root_help="A test.",
             xdg=xdg_spec,
             config=config_spec,
@@ -904,12 +898,20 @@ class TestInfoBaseRows:
     """§6.3 — info command required content."""
 
     def test_info_has_all_base_rows(self, minimal_spec, tmp_path, monkeypatch):
-        """Info MUST include: Version, Python, Config Dir, Data Dir, State Dir, Cache Dir, CLI Core."""
+        """Info MUST include required base rows."""
         app = _make_app(minimal_spec, tmp_path, monkeypatch)
         result = runner.invoke(app, ["info", "--json"])
         assert result.exit_code == 0
         data = json.loads(result.output)
-        required_keys = ["Version", "Python", "Config Dir", "Data Dir", "State Dir", "Cache Dir", "CLI Core"]
+        required_keys = [
+            "Version",
+            "Python",
+            "Config Dir",
+            "Data Dir",
+            "State Dir",
+            "Cache Dir",
+            "CLI Core",
+        ]
         for key in required_keys:
             assert key in data, f"Missing required info row: {key}"
 
@@ -931,30 +933,42 @@ class TestPublicAPI:
     """§3.3 — Public API surface verification."""
 
     def test_create_app_importable(self):
-        from cli_root_yo.app import create_app
+        from cli_core_yo.app import create_app
+
         assert callable(create_app)
 
     def test_run_importable(self):
-        from cli_root_yo.app import run
+        from cli_core_yo.app import run
+
         assert callable(run)
 
     def test_registry_importable(self):
-        from cli_root_yo.registry import CommandRegistry
+        from cli_core_yo.registry import CommandRegistry
+
         assert CommandRegistry is not None
 
     def test_get_context_importable(self):
-        from cli_root_yo.runtime import get_context
+        from cli_core_yo.runtime import get_context
+
         assert callable(get_context)
 
     def test_spec_classes_importable(self):
-        from cli_root_yo.spec import CliSpec, ConfigSpec, EnvSpec, PluginSpec, XdgSpec
+        from cli_core_yo.spec import CliSpec, ConfigSpec, EnvSpec, PluginSpec, XdgSpec
+
         assert all(c is not None for c in [CliSpec, ConfigSpec, EnvSpec, PluginSpec, XdgSpec])
 
     def test_output_primitives_importable(self):
-        from cli_root_yo import output
+        from cli_core_yo import output
+
         primitives = [
-            output.heading, output.success, output.warning, output.error,
-            output.action, output.detail, output.bullet, output.print_text,
+            output.heading,
+            output.success,
+            output.warning,
+            output.error,
+            output.action,
+            output.detail,
+            output.bullet,
+            output.print_text,
             output.emit_json,
         ]
         assert all(callable(p) for p in primitives)

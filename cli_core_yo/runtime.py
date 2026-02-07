@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from cli_root_yo.errors import ContextNotInitializedError
-from cli_root_yo.spec import CliSpec
-from cli_root_yo.xdg import XdgPaths
+from cli_core_yo.errors import ContextNotInitializedError
+from cli_core_yo.spec import CliSpec
+from cli_core_yo.xdg import XdgPaths
 
 # Module-level singleton
 _context: RuntimeContext | None = None
@@ -50,4 +50,3 @@ def _reset() -> None:
     """Reset the context (test-only)."""
     global _context
     _context = None
-

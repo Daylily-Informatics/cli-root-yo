@@ -1,11 +1,9 @@
-"""Tests for cli_root_yo.errors."""
+"""Tests for cli_core_yo.errors."""
 
 from __future__ import annotations
 
-import pytest
-
-from cli_root_yo.errors import (
-    CliRootYoError,
+from cli_core_yo.errors import (
+    CliCoreYoError,
     ContextNotInitializedError,
     PluginLoadError,
     RegistryConflictError,
@@ -14,9 +12,9 @@ from cli_root_yo.errors import (
 )
 
 
-class TestCliRootYoError:
+class TestCliCoreYoError:
     def test_base_exception(self):
-        err = CliRootYoError("boom")
+        err = CliCoreYoError("boom")
         assert str(err) == "boom"
         assert err.exit_code == 1
         assert isinstance(err, Exception)
@@ -29,7 +27,7 @@ class TestCliRootYoError:
             PluginLoadError,
             SpecValidationError,
         ]:
-            assert issubclass(cls, CliRootYoError)
+            assert issubclass(cls, CliCoreYoError)
 
 
 class TestContextNotInitializedError:
@@ -77,4 +75,3 @@ class TestSpecValidationError:
         err = SpecValidationError("prog_name is empty")
         assert "prog_name is empty" in str(err)
         assert "Invalid CliSpec" in str(err)
-

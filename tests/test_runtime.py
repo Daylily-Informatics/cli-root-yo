@@ -1,4 +1,4 @@
-"""Tests for cli_root_yo.runtime."""
+"""Tests for cli_core_yo.runtime."""
 
 from __future__ import annotations
 
@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
-from cli_root_yo.errors import ContextNotInitializedError
-from cli_root_yo.runtime import RuntimeContext, _reset, get_context, initialize
-from cli_root_yo.spec import CliSpec, XdgSpec
-from cli_root_yo.xdg import XdgPaths
+from cli_core_yo.errors import ContextNotInitializedError
+from cli_core_yo.runtime import RuntimeContext, _reset, get_context, initialize
+from cli_core_yo.spec import CliSpec, XdgSpec
+from cli_core_yo.xdg import XdgPaths
 
 
 @pytest.fixture()
@@ -65,4 +65,3 @@ class TestReset:
         _reset()
         ctx2 = initialize(dummy_spec, dummy_paths)
         assert get_context() is ctx2
-

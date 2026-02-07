@@ -39,7 +39,7 @@ def _reset_console() -> None:
 def _is_json_mode() -> bool:
     """Check if the current invocation is in JSON mode."""
     try:
-        from cli_root_yo.runtime import get_context
+        from cli_core_yo.runtime import get_context
 
         return get_context().json_mode
     except Exception:
@@ -121,4 +121,3 @@ def emit_json(data: Any) -> None:
     text = json.dumps(data, indent=2, sort_keys=True, ensure_ascii=False)
     sys.stdout.write(text + "\n")
     sys.stdout.flush()
-

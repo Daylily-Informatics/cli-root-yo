@@ -17,13 +17,13 @@ from datetime import datetime, timezone
 
 import typer
 
-from cli_root_yo import output
-from cli_root_yo.errors import CliRootYoError
-from cli_root_yo.plugins import load_plugins
-from cli_root_yo.registry import CommandRegistry
-from cli_root_yo.runtime import _reset, initialize
-from cli_root_yo.spec import CliSpec, ConfigSpec, EnvSpec
-from cli_root_yo.xdg import XdgPaths, resolve_paths
+from cli_core_yo import output
+from cli_core_yo.errors import CliCoreYoError
+from cli_core_yo.plugins import load_plugins
+from cli_core_yo.registry import CommandRegistry
+from cli_core_yo.runtime import _reset, initialize
+from cli_core_yo.spec import CliSpec, ConfigSpec, EnvSpec
+from cli_core_yo.xdg import XdgPaths, resolve_paths
 
 
 def create_app(spec: CliSpec) -> typer.Typer:
@@ -81,9 +81,9 @@ def create_app(spec: CliSpec) -> typer.Typer:
     registry.apply(app)
 
     # Store registry on app for run() to access
-    app._cli_root_yo_registry = registry  # type: ignore[attr-defined]
-    app._cli_root_yo_spec = spec  # type: ignore[attr-defined]
-    app._cli_root_yo_xdg_paths = xdg_paths  # type: ignore[attr-defined]
+    app._cli_core_yo_registry = registry  # type: ignore[attr-defined]
+    app._cli_core_yo_spec = spec  # type: ignore[attr-defined]
+    app._cli_core_yo_xdg_paths = xdg_paths  # type: ignore[attr-defined]
 
     return app
 
@@ -93,11 +93,11 @@ def run(spec: CliSpec, argv: list[str] | None = None) -> int:
     _reset()  # ensure clean context for this invocation
 
     # Determine debug mode from environment (§6.6)
-    debug = os.environ.get("CLI_ROOT_YO_DEBUG") == "1"
+    debug = os.environ.get("CLI_CORE_YO_DEBUG") == "1"
 
     try:
         app = create_app(spec)
-        xdg_paths = app._cli_root_yo_xdg_paths  # type: ignore[attr-defined]
+        xdg_paths = app._cli_core_yo_xdg_paths  # type: ignore[attr-defined]
 
         # Determine json_mode from argv before Typer parses
         args = argv if argv is not None else sys.argv[1:]
@@ -109,7 +109,7 @@ def run(spec: CliSpec, argv: list[str] | None = None) -> int:
         return 0
     except SystemExit as exc:
         return exc.code if isinstance(exc.code, int) else 0
-    except CliRootYoError as exc:
+    except CliCoreYoError as exc:
         if debug:
             traceback.print_exc(file=sys.stderr)
         output.error(str(exc))
@@ -126,8 +126,8 @@ def run(spec: CliSpec, argv: list[str] | None = None) -> int:
 
 def _validate_spec(spec: CliSpec) -> None:
     """Validate CliSpec required fields (§3.5 step 1)."""
-    from cli_root_yo.errors import SpecValidationError
-    from cli_root_yo.spec import NAME_RE
+    from cli_core_yo.errors import SpecValidationError
+    from cli_core_yo.spec import NAME_RE
 
     if not spec.prog_name:
         raise SpecValidationError("prog_name must not be empty")
@@ -146,6 +146,7 @@ def _validate_spec(spec: CliSpec) -> None:
 
 def _register_version(registry: CommandRegistry, spec: CliSpec) -> None:
     """Register the 'version' built-in command (§2.5)."""
+
     def _version_callback(
         json: bool = typer.Option(False, "--json", "-j", help="Output as JSON."),
     ) -> None:
@@ -163,16 +164,14 @@ def _register_version(registry: CommandRegistry, spec: CliSpec) -> None:
 # ── Built-in: info ───────────────────────────────────────────────────────────
 
 
-def _register_info(
-    registry: CommandRegistry, spec: CliSpec, xdg_paths: XdgPaths
-) -> None:
+def _register_info(registry: CommandRegistry, spec: CliSpec, xdg_paths: XdgPaths) -> None:
     """Register the 'info' built-in command (§2.5, §6.3)."""
 
     def _info_callback(
         json: bool = typer.Option(False, "--json", "-j", help="Output as JSON."),
     ) -> None:
         version = _get_dist_version(spec.dist_name)
-        core_version = _get_dist_version("cli-root-yo")
+        core_version = _get_dist_version("cli-core-yo")
 
         rows: list[tuple[str, str]] = [
             ("Version", version),
@@ -218,7 +217,12 @@ def _register_config_group(
     def _config_path_callback() -> None:
         output.print_text(str(config_path))
 
-    registry.add_command("config", "path", _config_path_callback, help_text="Show config file path.")
+    registry.add_command(
+        "config",
+        "path",
+        _config_path_callback,
+        help_text="Show config file path.",
+    )
 
     # config init
     def _config_init_callback(
@@ -233,7 +237,12 @@ def _register_config_group(
         config_path.write_bytes(template)
         output.success(f"Config file created: {config_path}")
 
-    registry.add_command("config", "init", _config_init_callback, help_text="Create config from template.")
+    registry.add_command(
+        "config",
+        "init",
+        _config_init_callback,
+        help_text="Create config from template.",
+    )
 
     # config show
     def _config_show_callback() -> None:
@@ -242,7 +251,12 @@ def _register_config_group(
             raise SystemExit(1)
         sys.stdout.write(config_path.read_text(encoding="utf-8"))
 
-    registry.add_command("config", "show", _config_show_callback, help_text="Show config file contents.")
+    registry.add_command(
+        "config",
+        "show",
+        _config_show_callback,
+        help_text="Show config file contents.",
+    )
 
     # config validate
     def _config_validate_callback() -> None:
@@ -261,7 +275,12 @@ def _register_config_group(
             raise SystemExit(1)
         output.success("Config is valid.")
 
-    registry.add_command("config", "validate", _config_validate_callback, help_text="Validate config file.")
+    registry.add_command(
+        "config",
+        "validate",
+        _config_validate_callback,
+        help_text="Validate config file.",
+    )
 
     # config edit
     def _config_edit_callback() -> None:
@@ -277,7 +296,12 @@ def _register_config_group(
             output.error(f"Editor exited with code {result.returncode}")
             raise SystemExit(1)
 
-    registry.add_command("config", "edit", _config_edit_callback, help_text="Edit config in editor.")
+    registry.add_command(
+        "config",
+        "edit",
+        _config_edit_callback,
+        help_text="Edit config in editor.",
+    )
 
     # config reset
     def _config_reset_callback(
@@ -285,7 +309,9 @@ def _register_config_group(
     ) -> None:
         if config_path.exists():
             if not yes:
-                confirm = typer.confirm("Reset config to template? This will overwrite current config.")
+                confirm = typer.confirm(
+                    "Reset config to template? This will overwrite current config."
+                )
                 if not confirm:
                     output.action("Aborted.")
                     raise SystemExit(0)
@@ -298,16 +324,18 @@ def _register_config_group(
         config_path.write_bytes(template)
         output.success(f"Config reset to template: {config_path}")
 
-    registry.add_command("config", "reset", _config_reset_callback, help_text="Reset config to template.")
-
+    registry.add_command(
+        "config",
+        "reset",
+        _config_reset_callback,
+        help_text="Reset config to template.",
+    )
 
 
 # ── Built-in: env group ──────────────────────────────────────────────────────
 
 
-def _register_env_group(
-    registry: CommandRegistry, env_spec: EnvSpec, xdg_paths: XdgPaths
-) -> None:
+def _register_env_group(registry: CommandRegistry, env_spec: EnvSpec, xdg_paths: XdgPaths) -> None:
     """Register built-in env subcommands (§4.7)."""
 
     registry._reserved.discard("env")
@@ -321,7 +349,7 @@ def _register_env_group(
         project_root = os.environ.get(env_spec.project_root_env_var, "")
 
         if is_active:
-            output.success(f"Environment is [bold]active[/bold]")
+            output.success("Environment is [bold]active[/bold]")
         else:
             output.warning("Environment is [bold]not active[/bold]")
 
@@ -330,13 +358,23 @@ def _register_env_group(
         output.detail(f"Python path:    {sys.executable}")
         output.detail(f"Config dir:     {xdg_paths.config}")
 
-    registry.add_command("env", "status", _env_status_callback, help_text="Show environment status.")
+    registry.add_command(
+        "env",
+        "status",
+        _env_status_callback,
+        help_text="Show environment status.",
+    )
 
     # env activate
     def _env_activate_callback() -> None:
         output.print_text(f"source {env_spec.activate_script_name}")
 
-    registry.add_command("env", "activate", _env_activate_callback, help_text="Print activation command.")
+    registry.add_command(
+        "env",
+        "activate",
+        _env_activate_callback,
+        help_text="Print activation command.",
+    )
 
     # env deactivate
     def _env_deactivate_callback() -> None:

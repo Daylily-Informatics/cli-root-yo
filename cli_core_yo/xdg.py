@@ -11,7 +11,7 @@ import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
-from cli_root_yo.spec import XdgSpec
+from cli_core_yo.spec import XdgSpec
 
 
 @dataclass(frozen=True)
@@ -85,4 +85,3 @@ def resolve_paths(xdg_spec: XdgSpec) -> XdgPaths:
                 shutil.copy2(str(legacy_file), str(target_file))
 
     return XdgPaths(config=config_dir, data=data_dir, state=state_dir, cache=cache_dir)
-

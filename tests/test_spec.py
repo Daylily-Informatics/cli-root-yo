@@ -1,10 +1,10 @@
-"""Tests for cli_root_yo.spec."""
+"""Tests for cli_core_yo.spec."""
 
 from __future__ import annotations
 
 import pytest
 
-from cli_root_yo.spec import (
+from cli_core_yo.spec import (
     NAME_RE,
     CliSpec,
     ConfigSpec,
@@ -137,4 +137,3 @@ class TestCliSpec:
         )
         assert spec.config is not None
         assert spec.env is not None
-

@@ -5,15 +5,14 @@ Enforces naming rules, conflict rules, deterministic ordering, and freeze semant
 
 from __future__ import annotations
 
-import re
 from dataclasses import dataclass, field
 from enum import Enum, auto
 from typing import Any, Callable
 
 import typer
 
-from cli_root_yo.errors import RegistryConflictError, RegistryFrozenError
-from cli_root_yo.spec import NAME_RE
+from cli_core_yo.errors import RegistryConflictError, RegistryFrozenError
+from cli_core_yo.spec import NAME_RE
 
 # Reserved root-level names (§4.2)
 _ALWAYS_RESERVED = frozenset({"version", "info"})
@@ -56,7 +55,10 @@ class CommandRegistry:
         if name in self._roots:
             existing = self._roots[name]
             if existing.kind != _NodeKind.GROUP:
-                raise RegistryConflictError(name, "exists as a command, cannot re-register as group")
+                raise RegistryConflictError(
+                    name,
+                    "exists as a command, cannot re-register as group",
+                )
             if help_text and existing.help_text and help_text != existing.help_text:
                 raise RegistryConflictError(
                     name, f"group help mismatch: '{existing.help_text}' vs '{help_text}'"
@@ -94,8 +96,11 @@ class CommandRegistry:
             )
 
         siblings[name] = _Node(
-            kind=_NodeKind.COMMAND, name=name, help_text=help_text,
-            order=ord_val, callback=callback,
+            kind=_NodeKind.COMMAND,
+            name=name,
+            help_text=help_text,
+            order=ord_val,
+            callback=callback,
         )
 
     def add_typer_app(
@@ -119,8 +124,11 @@ class CommandRegistry:
             raise RegistryConflictError(path_str, "already registered")
 
         siblings[name] = _Node(
-            kind=_NodeKind.TYPER_APP, name=name, help_text=help_text,
-            order=ord_val, typer_app=typer_app,
+            kind=_NodeKind.TYPER_APP,
+            name=name,
+            help_text=help_text,
+            order=ord_val,
+            typer_app=typer_app,
         )
 
     def freeze(self) -> None:
@@ -142,8 +150,10 @@ class CommandRegistry:
 
     def _apply_node(self, parent: typer.Typer, node: _Node) -> None:
         if node.kind == _NodeKind.COMMAND:
+            assert node.callback is not None
             parent.command(name=node.name, help=node.help_text)(node.callback)
         elif node.kind == _NodeKind.TYPER_APP:
+            assert node.typer_app is not None
             parent.add_typer(node.typer_app, name=node.name, help=node.help_text)
         elif node.kind == _NodeKind.GROUP:
             sub = typer.Typer(name=node.name, help=node.help_text, no_args_is_help=True)
@@ -199,4 +209,3 @@ class CommandRegistry:
             current_dict = node.children
 
         return node
-

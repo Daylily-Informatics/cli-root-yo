@@ -1,4 +1,4 @@
-"""Tests for cli_root_yo.xdg."""
+"""Tests for cli_core_yo.xdg."""
 
 from __future__ import annotations
 
@@ -8,8 +8,8 @@ from unittest.mock import patch
 
 import pytest
 
-from cli_root_yo.spec import XdgSpec
-from cli_root_yo.xdg import resolve_paths
+from cli_core_yo.spec import XdgSpec
+from cli_core_yo.xdg import resolve_paths
 
 
 @pytest.fixture()
@@ -40,8 +40,8 @@ class TestResolvePaths:
         cleaned = {k: v for k, v in os.environ.items() if k not in remove_keys}
         with (
             patch.dict(os.environ, cleaned, clear=True),
-            patch("cli_root_yo.xdg._is_macos", return_value=False),
-            patch("cli_root_yo.xdg.Path.home", return_value=tmp_path),
+            patch("cli_core_yo.xdg._is_macos", return_value=False),
+            patch("cli_core_yo.xdg.Path.home", return_value=tmp_path),
         ):
             paths = resolve_paths(xdg_spec)
         assert paths.config == tmp_path / ".config" / "testapp"
@@ -54,8 +54,8 @@ class TestResolvePaths:
         cleaned = {k: v for k, v in os.environ.items() if k not in remove_keys}
         with (
             patch.dict(os.environ, cleaned, clear=True),
-            patch("cli_root_yo.xdg._is_macos", return_value=True),
-            patch("cli_root_yo.xdg.Path.home", return_value=tmp_path),
+            patch("cli_core_yo.xdg._is_macos", return_value=True),
+            patch("cli_core_yo.xdg.Path.home", return_value=tmp_path),
         ):
             paths = resolve_paths(xdg_spec)
         assert paths.config == tmp_path / ".config" / "testapp"
@@ -78,7 +78,7 @@ class TestLegacyMigration:
         env = {"XDG_CONFIG_HOME": str(tmp_path / "cfg")}
         with (
             patch.dict(os.environ, env, clear=False),
-            patch("cli_root_yo.xdg._is_macos", return_value=True),
+            patch("cli_core_yo.xdg._is_macos", return_value=True),
         ):
             paths = resolve_paths(spec)
         target = paths.config / "old.json"
@@ -102,7 +102,7 @@ class TestLegacyMigration:
         env = {"XDG_CONFIG_HOME": str(tmp_path / "cfg")}
         with (
             patch.dict(os.environ, env, clear=False),
-            patch("cli_root_yo.xdg._is_macos", return_value=True),
+            patch("cli_core_yo.xdg._is_macos", return_value=True),
         ):
             paths = resolve_paths(spec)
         assert (paths.config / "old.json").read_text() == "existing"
@@ -120,8 +120,7 @@ class TestLegacyMigration:
         env = {"XDG_CONFIG_HOME": str(tmp_path / "cfg")}
         with (
             patch.dict(os.environ, env, clear=False),
-            patch("cli_root_yo.xdg._is_macos", return_value=False),
+            patch("cli_core_yo.xdg._is_macos", return_value=False),
         ):
             paths = resolve_paths(spec)
         assert not (paths.config / "old.json").exists()
-

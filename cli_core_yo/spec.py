@@ -1,4 +1,4 @@
-"""Immutable configuration dataclasses for cli-root-yo.
+"""Immutable configuration dataclasses for cli-core-yo.
 
 All spec objects are frozen dataclasses — no runtime logic, no I/O.
 """
@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Callable
 
 # Regex for valid command/group names (§2.2)
 NAME_RE = re.compile(r"^[a-z][a-z0-9-]*$")
@@ -63,7 +63,7 @@ class CliSpec:
     """Top-level immutable specification for a CLI application.
 
     Downstream repos create exactly one instance and pass it to
-    ``cli_root_yo.app.create_app()`` or ``cli_root_yo.app.run()``.
+    ``cli_core_yo.app.create_app()`` or ``cli_core_yo.app.run()``.
     """
 
     prog_name: str
@@ -75,4 +75,3 @@ class CliSpec:
     env: EnvSpec | None = None
     plugins: PluginSpec = field(default_factory=PluginSpec)
     info_hooks: list[Callable[[], list[tuple[str, str]]]] = field(default_factory=list)
-
