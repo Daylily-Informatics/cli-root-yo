@@ -65,4 +65,3 @@ class TestReset:
         _reset()
         ctx2 = initialize(dummy_spec, dummy_paths)
         assert get_context() is ctx2
-

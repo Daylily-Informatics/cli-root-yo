@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import Any, Callable
+from typing import Callable
 
 # Regex for valid command/group names (§2.2)
 NAME_RE = re.compile(r"^[a-z][a-z0-9-]*$")
@@ -75,4 +75,3 @@ class CliSpec:
     env: EnvSpec | None = None
     plugins: PluginSpec = field(default_factory=PluginSpec)
     info_hooks: list[Callable[[], list[tuple[str, str]]]] = field(default_factory=list)
-

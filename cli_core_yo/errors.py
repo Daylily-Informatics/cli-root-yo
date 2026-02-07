@@ -59,4 +59,3 @@ class SpecValidationError(CliCoreYoError):
 
     def __init__(self, detail: str) -> None:
         super().__init__(f"Invalid CliSpec: {detail}")
-

@@ -20,7 +20,7 @@ from cli_core_yo.errors import PluginLoadError
 
 if TYPE_CHECKING:
     from cli_core_yo.registry import CommandRegistry
-    from cli_core_yo.spec import CliSpec, PluginSpec
+    from cli_core_yo.spec import CliSpec
 
 # Entry-point group name (§4.4)
 _EP_GROUP = "cli_core_yo.plugins"
@@ -95,4 +95,3 @@ def _load_entry_point(
     except Exception as exc:
         output.error(f"Entry-point plugin '{ep_name}' raised: {exc}")
         raise PluginLoadError(ep_name, str(exc)) from exc
-

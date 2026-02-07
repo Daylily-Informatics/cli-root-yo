@@ -50,4 +50,3 @@ def _reset() -> None:
     """Reset the context (test-only)."""
     global _context
     _context = None
-

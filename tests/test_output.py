@@ -4,14 +4,13 @@ from __future__ import annotations
 
 import json
 import os
-from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
 from cli_core_yo import output
-from cli_core_yo.runtime import _reset, initialize
+from cli_core_yo.runtime import initialize
 from cli_core_yo.spec import CliSpec, XdgSpec
 from cli_core_yo.xdg import XdgPaths
 
@@ -150,4 +149,3 @@ class TestNoColor:
         out = capsys.readouterr().out
         # Should not contain ANSI escape sequences
         assert "\x1b[" not in out
-

@@ -121,4 +121,3 @@ def emit_json(data: Any) -> None:
     text = json.dumps(data, indent=2, sort_keys=True, ensure_ascii=False)
     sys.stdout.write(text + "\n")
     sys.stdout.flush()
-

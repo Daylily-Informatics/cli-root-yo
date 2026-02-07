@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-import pytest
-
 from cli_core_yo.errors import (
     CliCoreYoError,
     ContextNotInitializedError,
@@ -77,4 +75,3 @@ class TestSpecValidationError:
         err = SpecValidationError("prog_name is empty")
         assert "prog_name is empty" in str(err)
         assert "Invalid CliSpec" in str(err)
-

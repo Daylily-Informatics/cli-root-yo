@@ -137,4 +137,3 @@ class TestCliSpec:
         )
         assert spec.config is not None
         assert spec.env is not None
-

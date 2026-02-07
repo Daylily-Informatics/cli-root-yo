@@ -16,4 +16,3 @@ def _reset_runtime():
         runtime._reset()
     except (ImportError, AttributeError):
         pass
-

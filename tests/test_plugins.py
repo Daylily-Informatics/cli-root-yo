@@ -7,7 +7,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from cli_core_yo.errors import PluginLoadError
-from cli_core_yo.plugins import _EP_GROUP, load_plugins
+from cli_core_yo.plugins import load_plugins
 from cli_core_yo.registry import CommandRegistry
 from cli_core_yo.spec import CliSpec, PluginSpec, XdgSpec
 
@@ -163,4 +163,3 @@ class TestLoadOrder:
             load_plugins(registry, spec)
 
         assert order == ["explicit", "entry_point"]
-

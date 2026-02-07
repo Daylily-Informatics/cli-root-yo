@@ -124,4 +124,3 @@ class TestLegacyMigration:
         ):
             paths = resolve_paths(spec)
         assert not (paths.config / "old.json").exists()
-

@@ -161,4 +161,3 @@ class TestOrdering:
         reg.add_command(None, "first", _noop, order=10)
         ordered = sorted(reg._roots.values(), key=lambda n: n.order)
         assert [n.name for n in ordered] == ["first", "second"]
-
