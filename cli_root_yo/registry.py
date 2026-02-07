@@ -43,7 +43,7 @@ class CommandRegistry:
         self._roots: dict[str, _Node] = {}
         self._frozen = False
         self._counter = 0
-        self._reserved = _ALWAYS_RESERVED | (reserved_names or frozenset())
+        self._reserved: set[str] = set(_ALWAYS_RESERVED | (reserved_names or frozenset()))
 
     # ── Public registration API ──────────────────────────────────────────
 
