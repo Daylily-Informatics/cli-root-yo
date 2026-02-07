@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel", "setuptools_scm>=8.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cli-root-yo"
+dynamic = ["version"]
+description = "Reusable CLI kernel for building unified command-line interfaces with consistent behavior, output style, help, and extension semantics."
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Daylily Informatics"},
+]
+dependencies = [
+    "typer>=0.21.0,<0.22.0",
+    "rich>=14.0.0,<15.0.0",
+    "click>=8.3.0,<9.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "ruff>=0.4.0",
+    "mypy>=1.0",
+]
+
+[tool.setuptools_scm]
+version_scheme = "guess-next-dev"
+local_scheme = "no-local-version"
+write_to = "cli_root_yo/_version.py"
+write_to_template = '__version__ = "{version}"'
+
+[tool.setuptools.packages.find]
+include = ["cli_root_yo*"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 99
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --tb=short"
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+
