@@ -29,3 +29,6 @@ Please perform the following tasks in sequence:
 - Follow the SPEC.md requirements exactly as written (Section 8: "DO NOT CHANGE" rules)
 - Do not begin implementation until the plan is approved
 - The plan should be detailed enough that implementation can proceed deterministically once approved
+
+
+# I added to the top of the improved prompty 'in a feature branch, do the following work, write tests for all new functionality you build, all cli commands and sub commands must have at least 1 test in an appropriate framework, continue to implement until the specification is met exactly, no more no less, unless tests are failing repeatedly and you need my help. Pleas commit and push at points you find make sense and report back when the entire spec is implemented.
