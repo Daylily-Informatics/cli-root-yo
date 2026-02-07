@@ -12,8 +12,8 @@ from typing import Any, Callable
 
 import typer
 
-from cli_root_yo.errors import RegistryConflictError, RegistryFrozenError
-from cli_root_yo.spec import NAME_RE
+from cli_core_yo.errors import RegistryConflictError, RegistryFrozenError
+from cli_core_yo.spec import NAME_RE
 
 # Reserved root-level names (§4.2)
 _ALWAYS_RESERVED = frozenset({"version", "info"})

@@ -6,7 +6,7 @@ Loading order:
 1. spec.plugins.explicit — import paths loaded in list order
 2. spec.plugins.entry_points — entry-point names loaded in list order
 
-Entry point group: cli_root_yo.plugins
+Entry point group: cli_core_yo.plugins
 """
 
 from __future__ import annotations
@@ -15,15 +15,15 @@ import importlib
 from importlib.metadata import entry_points
 from typing import TYPE_CHECKING
 
-from cli_root_yo import output
-from cli_root_yo.errors import PluginLoadError
+from cli_core_yo import output
+from cli_core_yo.errors import PluginLoadError
 
 if TYPE_CHECKING:
-    from cli_root_yo.registry import CommandRegistry
-    from cli_root_yo.spec import CliSpec, PluginSpec
+    from cli_core_yo.registry import CommandRegistry
+    from cli_core_yo.spec import CliSpec, PluginSpec
 
 # Entry-point group name (§4.4)
-_EP_GROUP = "cli_root_yo.plugins"
+_EP_GROUP = "cli_core_yo.plugins"
 
 
 def load_plugins(

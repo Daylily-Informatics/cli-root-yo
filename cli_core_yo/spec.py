@@ -1,4 +1,4 @@
-"""Immutable configuration dataclasses for cli-root-yo.
+"""Immutable configuration dataclasses for cli-core-yo.
 
 All spec objects are frozen dataclasses — no runtime logic, no I/O.
 """
@@ -63,7 +63,7 @@ class CliSpec:
     """Top-level immutable specification for a CLI application.
 
     Downstream repos create exactly one instance and pass it to
-    ``cli_root_yo.app.create_app()`` or ``cli_root_yo.app.run()``.
+    ``cli_core_yo.app.create_app()`` or ``cli_core_yo.app.run()``.
     """
 
     prog_name: str

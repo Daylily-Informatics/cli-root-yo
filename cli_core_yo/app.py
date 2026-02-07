@@ -17,13 +17,13 @@ from datetime import datetime, timezone
 
 import typer
 
-from cli_root_yo import output
-from cli_root_yo.errors import CliRootYoError
-from cli_root_yo.plugins import load_plugins
-from cli_root_yo.registry import CommandRegistry
-from cli_root_yo.runtime import _reset, initialize
-from cli_root_yo.spec import CliSpec, ConfigSpec, EnvSpec
-from cli_root_yo.xdg import XdgPaths, resolve_paths
+from cli_core_yo import output
+from cli_core_yo.errors import CliCoreYoError
+from cli_core_yo.plugins import load_plugins
+from cli_core_yo.registry import CommandRegistry
+from cli_core_yo.runtime import _reset, initialize
+from cli_core_yo.spec import CliSpec, ConfigSpec, EnvSpec
+from cli_core_yo.xdg import XdgPaths, resolve_paths
 
 
 def create_app(spec: CliSpec) -> typer.Typer:
@@ -81,9 +81,9 @@ def create_app(spec: CliSpec) -> typer.Typer:
     registry.apply(app)
 
     # Store registry on app for run() to access
-    app._cli_root_yo_registry = registry  # type: ignore[attr-defined]
-    app._cli_root_yo_spec = spec  # type: ignore[attr-defined]
-    app._cli_root_yo_xdg_paths = xdg_paths  # type: ignore[attr-defined]
+    app._cli_core_yo_registry = registry  # type: ignore[attr-defined]
+    app._cli_core_yo_spec = spec  # type: ignore[attr-defined]
+    app._cli_core_yo_xdg_paths = xdg_paths  # type: ignore[attr-defined]
 
     return app
 
@@ -93,11 +93,11 @@ def run(spec: CliSpec, argv: list[str] | None = None) -> int:
     _reset()  # ensure clean context for this invocation
 
     # Determine debug mode from environment (§6.6)
-    debug = os.environ.get("CLI_ROOT_YO_DEBUG") == "1"
+    debug = os.environ.get("CLI_CORE_YO_DEBUG") == "1"
 
     try:
         app = create_app(spec)
-        xdg_paths = app._cli_root_yo_xdg_paths  # type: ignore[attr-defined]
+        xdg_paths = app._cli_core_yo_xdg_paths  # type: ignore[attr-defined]
 
         # Determine json_mode from argv before Typer parses
         args = argv if argv is not None else sys.argv[1:]
@@ -109,7 +109,7 @@ def run(spec: CliSpec, argv: list[str] | None = None) -> int:
         return 0
     except SystemExit as exc:
         return exc.code if isinstance(exc.code, int) else 0
-    except CliRootYoError as exc:
+    except CliCoreYoError as exc:
         if debug:
             traceback.print_exc(file=sys.stderr)
         output.error(str(exc))
@@ -126,8 +126,8 @@ def run(spec: CliSpec, argv: list[str] | None = None) -> int:
 
 def _validate_spec(spec: CliSpec) -> None:
     """Validate CliSpec required fields (§3.5 step 1)."""
-    from cli_root_yo.errors import SpecValidationError
-    from cli_root_yo.spec import NAME_RE
+    from cli_core_yo.errors import SpecValidationError
+    from cli_core_yo.spec import NAME_RE
 
     if not spec.prog_name:
         raise SpecValidationError("prog_name must not be empty")
@@ -172,7 +172,7 @@ def _register_info(
         json: bool = typer.Option(False, "--json", "-j", help="Output as JSON."),
     ) -> None:
         version = _get_dist_version(spec.dist_name)
-        core_version = _get_dist_version("cli-root-yo")
+        core_version = _get_dist_version("cli-core-yo")
 
         rows: list[tuple[str, str]] = [
             ("Version", version),

@@ -1,24 +1,24 @@
-# cli-root-yo
+# cli-core-yo
 
-[![GitHub Release](https://img.shields.io/github/v/release/Daylily-Informatics/cli-root-yo?style=flat-square&label=release)](https://github.com/Daylily-Informatics/cli-root-yo/releases/latest)
-[![GitHub Tag](https://img.shields.io/github/v/tag/Daylily-Informatics/cli-root-yo?style=flat-square&label=tag)](https://github.com/Daylily-Informatics/cli-root-yo/tags)
+[![GitHub Release](https://img.shields.io/github/v/release/Daylily-Informatics/cli-core-yo?style=flat-square&label=release)](https://github.com/Daylily-Informatics/cli-core-yo/releases/latest)
+[![GitHub Tag](https://img.shields.io/github/v/tag/Daylily-Informatics/cli-core-yo?style=flat-square&label=tag)](https://github.com/Daylily-Informatics/cli-core-yo/tags)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 
 Reusable CLI kernel for building unified command-line interfaces with consistent behavior, output style, help, and extension semantics. Built on [Typer](https://typer.tiangolo.com/) + [Rich](https://rich.readthedocs.io/).
 
 ## What It Does
 
-`cli-root-yo` provides the shared foundation that downstream CLI tools build on:
+`cli-core-yo` provides the shared foundation that downstream CLI tools build on:
 
 - **Root app factory** — `create_app()` builds a fully configured Typer app from a declarative spec
 - **Built-in commands** — `version`, `info`, and optional `config`/`env` groups
-- **Plugin system** — explicit callables + `cli_root_yo.plugins` entry-point discovery
+- **Plugin system** — explicit callables + `cli_core_yo.plugins` entry-point discovery
 - **XDG paths** — platform-aware config/data/state/cache directory resolution (macOS + Linux)
 - **Output primitives** — `heading`, `success`, `warning`, `error`, `action`, `detail`, `bullet`, `emit_json`
 - **Runtime context** — immutable singleton accessible to all commands during invocation
 - **JSON mode** — `--json`/`-j` flag with deterministic output (indent=2, sorted keys, no ANSI)
 - **NO_COLOR** — respects the [NO_COLOR](https://no-color.org/) convention
-- **Debug mode** — `CLI_ROOT_YO_DEBUG=1` prints tracebacks to STDERR
+- **Debug mode** — `CLI_CORE_YO_DEBUG=1` prints tracebacks to STDERR
 
 ## Prerequisites
 
@@ -28,28 +28,28 @@ Reusable CLI kernel for building unified command-line interfaces with consistent
 ## Installation
 
 ```bash
-pip install cli-root-yo
+pip install cli-core-yo
 ```
 
 For development:
 
 ```bash
-git clone https://github.com/Daylily-Informatics/cli-root-yo.git
-cd cli-root-yo
+git clone https://github.com/Daylily-Informatics/cli-core-yo.git
+cd cli-core-yo
 pip install -e ".[dev]"
 ```
 
 ## Quick Start
 
 ```python
-from cli_root_yo.spec import CliSpec, XdgSpec
-from cli_root_yo.app import run
+from cli_core_yo.spec import CliSpec, XdgSpec
+from cli_core_yo.app import run
 
 spec = CliSpec(
     prog_name="my-tool",
     app_display_name="My Tool",
     dist_name="my-tool",
-    root_help="A CLI built with cli-root-yo.",
+    root_help="A CLI built with cli-core-yo.",
     xdg=XdgSpec(vendor="my-tool"),
 )
 
@@ -66,14 +66,14 @@ def register(registry, spec):
     registry.add_command(None, "greet", greet_cmd, help_text="Say hello.")
 
 def greet_cmd():
-    from cli_root_yo import output
+    from cli_core_yo import output
     output.success("Hello, world!")
 ```
 
 Register it in your spec:
 
 ```python
-from cli_root_yo.spec import PluginSpec
+from cli_core_yo.spec import PluginSpec
 
 spec = CliSpec(
     ...,
@@ -84,7 +84,7 @@ spec = CliSpec(
 Or via entry points in `pyproject.toml`:
 
 ```toml
-[project.entry-points."cli_root_yo.plugins"]
+[project.entry-points."cli_core_yo.plugins"]
 my-tool = "my_tool.plugin:register"
 ```
 
@@ -93,7 +93,7 @@ my-tool = "my_tool.plugin:register"
 Enable optional built-in command groups by providing specs:
 
 ```python
-from cli_root_yo.spec import ConfigSpec, EnvSpec
+from cli_core_yo.spec import ConfigSpec, EnvSpec
 
 spec = CliSpec(
     ...,
@@ -114,12 +114,12 @@ This adds `config path|init|show|validate|edit|reset` and `env status|activate|d
 
 | Symbol | Module | Description |
 |--------|--------|-------------|
-| `create_app(spec)` | `cli_root_yo.app` | Build a Typer app from a CliSpec |
-| `run(spec, argv)` | `cli_root_yo.app` | Execute CLI, return exit code (never calls `sys.exit()`) |
-| `CommandRegistry` | `cli_root_yo.registry` | Register commands/groups with ordering and conflict detection |
-| `get_context()` | `cli_root_yo.runtime` | Access the current invocation's RuntimeContext |
-| `CliSpec`, `ConfigSpec`, `EnvSpec`, `PluginSpec`, `XdgSpec` | `cli_root_yo.spec` | Frozen dataclass specs |
-| `output.*` | `cli_root_yo.output` | UX primitives + `emit_json()` |
+| `create_app(spec)` | `cli_core_yo.app` | Build a Typer app from a CliSpec |
+| `run(spec, argv)` | `cli_core_yo.app` | Execute CLI, return exit code (never calls `sys.exit()`) |
+| `CommandRegistry` | `cli_core_yo.registry` | Register commands/groups with ordering and conflict detection |
+| `get_context()` | `cli_core_yo.runtime` | Access the current invocation's RuntimeContext |
+| `CliSpec`, `ConfigSpec`, `EnvSpec`, `PluginSpec`, `XdgSpec` | `cli_core_yo.spec` | Frozen dataclass specs |
+| `output.*` | `cli_core_yo.output` | UX primitives + `emit_json()` |
 
 ## Exit Codes
 
@@ -134,14 +134,14 @@ This adds `config path|init|show|validate|edit|reset` and `env status|activate|d
 
 ```bash
 # Run tests
-python -m pytest tests/ -v --cov=cli_root_yo
+python -m pytest tests/ -v --cov=cli_core_yo
 
 # Lint + format check
-ruff check cli_root_yo tests
-ruff format --check cli_root_yo tests
+ruff check cli_core_yo tests
+ruff format --check cli_core_yo tests
 
 # Type check
-mypy cli_root_yo --ignore-missing-imports
+mypy cli_core_yo --ignore-missing-imports
 
 # Build distribution
 python -m build

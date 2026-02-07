@@ -1,4 +1,4 @@
-"""Tests for cli_root_yo.output."""
+"""Tests for cli_core_yo.output."""
 
 from __future__ import annotations
 
@@ -10,10 +10,10 @@ from unittest.mock import patch
 
 import pytest
 
-from cli_root_yo import output
-from cli_root_yo.runtime import _reset, initialize
-from cli_root_yo.spec import CliSpec, XdgSpec
-from cli_root_yo.xdg import XdgPaths
+from cli_core_yo import output
+from cli_core_yo.runtime import _reset, initialize
+from cli_core_yo.spec import CliSpec, XdgSpec
+from cli_core_yo.xdg import XdgPaths
 
 
 @pytest.fixture(autouse=True)

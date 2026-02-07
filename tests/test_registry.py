@@ -1,12 +1,12 @@
-"""Tests for cli_root_yo.registry."""
+"""Tests for cli_core_yo.registry."""
 
 from __future__ import annotations
 
 import pytest
 import typer
 
-from cli_root_yo.errors import RegistryConflictError, RegistryFrozenError
-from cli_root_yo.registry import CommandRegistry
+from cli_core_yo.errors import RegistryConflictError, RegistryFrozenError
+from cli_core_yo.registry import CommandRegistry
 
 
 def _noop() -> None:

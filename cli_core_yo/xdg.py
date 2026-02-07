@@ -11,7 +11,7 @@ import shutil
 from dataclasses import dataclass
 from pathlib import Path
 
-from cli_root_yo.spec import XdgSpec
+from cli_core_yo.spec import XdgSpec
 
 
 @dataclass(frozen=True)

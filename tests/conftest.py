@@ -1,4 +1,4 @@
-"""Shared test fixtures for cli-root-yo."""
+"""Shared test fixtures for cli-core-yo."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ def _reset_runtime():
     yield
     # Lazy import to avoid circular issues during collection
     try:
-        from cli_root_yo import runtime
+        from cli_core_yo import runtime
 
         runtime._reset()
     except (ImportError, AttributeError):

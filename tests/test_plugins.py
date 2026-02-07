@@ -1,4 +1,4 @@
-"""Tests for cli_root_yo.plugins."""
+"""Tests for cli_core_yo.plugins."""
 
 from __future__ import annotations
 
@@ -6,10 +6,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from cli_root_yo.errors import PluginLoadError
-from cli_root_yo.plugins import _EP_GROUP, load_plugins
-from cli_root_yo.registry import CommandRegistry
-from cli_root_yo.spec import CliSpec, PluginSpec, XdgSpec
+from cli_core_yo.errors import PluginLoadError
+from cli_core_yo.plugins import _EP_GROUP, load_plugins
+from cli_core_yo.registry import CommandRegistry
+from cli_core_yo.spec import CliSpec, PluginSpec, XdgSpec
 
 
 @pytest.fixture()
@@ -43,7 +43,7 @@ class TestExplicitPlugins:
             xdg=XdgSpec(app_dir_name="test"),
             plugins=PluginSpec(explicit=["fake_mod.register"]),
         )
-        with patch("cli_root_yo.plugins.importlib") as mock_importlib:
+        with patch("cli_core_yo.plugins.importlib") as mock_importlib:
             mock_module = MagicMock()
             mock_module.register = plugin_fn
             mock_importlib.import_module.return_value = mock_module
@@ -77,7 +77,7 @@ class TestExplicitPlugins:
             xdg=XdgSpec(app_dir_name="test"),
             plugins=PluginSpec(explicit=["fake_mod.bad_plugin"]),
         )
-        with patch("cli_root_yo.plugins.importlib") as mock_importlib:
+        with patch("cli_core_yo.plugins.importlib") as mock_importlib:
             mock_module = MagicMock()
             mock_module.bad_plugin = bad_plugin
             mock_importlib.import_module.return_value = mock_module
@@ -127,7 +127,7 @@ class TestEntryPointPlugins:
             xdg=XdgSpec(app_dir_name="test"),
             plugins=PluginSpec(entry_points=["my-ep"]),
         )
-        with patch("cli_root_yo.plugins.entry_points", return_value=[mock_ep]):
+        with patch("cli_core_yo.plugins.entry_points", return_value=[mock_ep]):
             load_plugins(registry, spec)
         assert len(calls) == 1
 
@@ -154,8 +154,8 @@ class TestLoadOrder:
             plugins=PluginSpec(explicit=["mod.fn"], entry_points=["my-ep"]),
         )
         with (
-            patch("cli_root_yo.plugins.importlib") as mock_importlib,
-            patch("cli_root_yo.plugins.entry_points", return_value=[mock_ep]),
+            patch("cli_core_yo.plugins.importlib") as mock_importlib,
+            patch("cli_core_yo.plugins.entry_points", return_value=[mock_ep]),
         ):
             mock_module = MagicMock()
             mock_module.fn = explicit_fn
